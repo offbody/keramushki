@@ -1,0 +1,26 @@
+{
+  "name": "ceramushki-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Сайт керамической мастерской Керамушки с формой записи и Telegram-заявками.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "build:static": "node scripts/build-static.mjs",
+    "preview:static": "node scripts/preview.mjs"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "dependencies": {
+    "react-dom": "^19.0.0",
+    "react": "^19.0.0",
+    "lucide-react": "^0.468.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "vite": "^7.0.0"
+  }
+}
