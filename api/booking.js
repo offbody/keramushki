@@ -123,8 +123,12 @@ function buildTelegramMessage(data) {
 }
 
 export default async function handler(request, response) {
+  const allowedOrigin = process.env.ALLOWED_ORIGIN || request.headers.origin || '*';
+
+  response.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  response.setHeader('Vary', 'Origin');
 
   if (request.method === 'OPTIONS') {
     response.statusCode = 204;

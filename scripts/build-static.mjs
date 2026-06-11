@@ -20,6 +20,11 @@ await cp(join(root, 'public'), dist, { recursive: true });
 const mainJs = await readFile(join(dist, 'src', 'main.js'), 'utf8');
 
 await writeFile(join(dist, 'index.html'), staticIndexHtml);
-await writeFile(join(dist, 'src', 'main.js'), mainJs.replace("import './styles.css';\n\n", ''));
+await writeFile(
+  join(dist, 'src', 'main.js'),
+  mainJs
+    .replace("import './styles.css';\n\n", '')
+    .replaceAll('import.meta.env.VITE_BOOKING_ENDPOINT', 'undefined'),
+);
 
 console.log('Static build complete: dist/');

@@ -49,10 +49,14 @@ npm run start
 
 ## Telegram заявки
 
-Нужно добавить переменные окружения на хостинге:
+Если хостинг запускает Node-приложение, добавьте переменные окружения там:
 
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_CHAT_ID`
+
+Если сайт размещается как статический фронтенд, вынесите Telegram-отправку в отдельный Worker/backend и добавьте на хостинге сайта:
+
+- `VITE_BOOKING_ENDPOINT`
 
 Не добавляйте `TELEGRAM_DRY_RUN` на продакшене.
 
@@ -65,4 +69,5 @@ npm run start
 - `src/styles.css` - стили сайта
 - `server.mjs` - production-сервер для облачного Node-деплоя
 - `api/booking.js` - endpoint для Telegram-заявок
+- `workers/telegram-worker.js` - отдельный Worker endpoint для статического хостинга
 - `public/assets` - изображения, логотипы, шрифты

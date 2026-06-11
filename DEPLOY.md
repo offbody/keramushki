@@ -48,6 +48,32 @@ Node.js version: 20.19+ или 24
 
 В статическом режиме сам сайт откроется, но Telegram-заявки будут работать только если платформа отдельно поддерживает serverless functions из папки `/api`. Если такой поддержки нет, переключите приложение на Node.js-режим и используйте `Start command: npm run start`.
 
+Если Node.js-режима нет, оставьте сайт в статическом режиме и вынесите отправку заявок в отдельный Worker/backend. Для этого:
+
+1. Создайте Worker в Cloudflare Workers или похожем сервисе.
+2. Вставьте туда код из `workers/telegram-worker.js`.
+3. В переменные Worker добавьте:
+
+```text
+TELEGRAM_BOT_TOKEN=токен от BotFather
+TELEGRAM_CHAT_ID=id чата или группы
+ALLOWED_ORIGIN=https://адрес-вашего-сайта
+```
+
+4. Скопируйте URL Worker, например:
+
+```text
+https://ceramushki-booking.username.workers.dev/api/booking
+```
+
+5. На хостинге самого сайта добавьте переменную:
+
+```text
+VITE_BOOKING_ENDPOINT=https://ceramushki-booking.username.workers.dev/api/booking
+```
+
+6. Сделайте redeploy сайта. Vite подставит `VITE_BOOKING_ENDPOINT` в сборку, и форма начнет отправлять заявки на внешний endpoint.
+
 ## 3. Создание Telegram-бота
 
 1. Откройте Telegram.
@@ -142,6 +168,8 @@ https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/getUpdates
 TELEGRAM_BOT_TOKEN=токен от BotFather
 TELEGRAM_CHAT_ID=id чата или группы
 ```
+
+Для статического сайта эти две переменные должны быть в Worker/backend, а в настройках сайта нужна только `VITE_BOOKING_ENDPOINT`.
 
 Не добавляйте `TELEGRAM_DRY_RUN` на продакшене. Эта переменная нужна только для локальной проверки без реальной отправки в Telegram.
 

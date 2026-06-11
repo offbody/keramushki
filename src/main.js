@@ -355,7 +355,12 @@ function initBooking() {
     showResult('Отправляем заявку...', 'info');
 
     try {
-      const response = await fetch('/api/booking', {
+      const bookingEndpoint =
+        window.CERAMUSHKI_BOOKING_ENDPOINT ||
+        import.meta.env.VITE_BOOKING_ENDPOINT ||
+        '/api/booking';
+
+      const response = await fetch(bookingEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
