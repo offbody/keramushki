@@ -24,7 +24,19 @@ git push -u origin main
 
 Подключите GitHub-репозиторий в панели хостинга.
 
-Обычно нужны такие настройки:
+Если хостинг умеет запускать Node-приложение, используйте такой вариант. Он предпочтителен для этого проекта, потому что форма записи и `/api/booking` будут работать на том же сервере:
+
+```text
+Runtime / Framework: Node.js
+Install command: npm install
+Build command: npm run build
+Start command: npm run start
+Node.js version: 20.19+ или 24
+```
+
+Сервер читает порт из переменной `PORT`, которую обычно автоматически выдает хостинг.
+
+Если хостинг работает именно как статический Vite/React-хостинг, настройки такие:
 
 ```text
 Framework preset: Vite / React
@@ -34,7 +46,7 @@ Output directory: dist
 Node.js version: 20.19+ или 24
 ```
 
-Если хостинг спрашивает путь к serverless functions, оставьте стандартный `/api`. В проекте endpoint заявки находится в `api/booking.js`.
+В статическом режиме сам сайт откроется, но Telegram-заявки будут работать только если платформа отдельно поддерживает serverless functions из папки `/api`. Если такой поддержки нет, переключите приложение на Node.js-режим и используйте `Start command: npm run start`.
 
 ## 3. Создание Telegram-бота
 

@@ -2,7 +2,7 @@
 
 Сайт керамической мастерской с галереей, описанием форматов занятий, блоком основателя и формой записи.
 
-Форма отправляет заявку на serverless endpoint `/api/booking`, а endpoint пересылает данные в Telegram через Bot API.
+Форма отправляет заявку на endpoint `/api/booking`, а endpoint пересылает данные в Telegram через Bot API.
 
 ## Локальный запуск
 
@@ -28,12 +28,21 @@ npm run build
 
 Папка результата: `dist`.
 
+Для облачного Node-сервера после сборки запускайте:
+
+```bash
+npm run start
+```
+
+Сервер сам возьмет порт из переменной `PORT`, отдаст папку `dist` и обработает `/api/booking`.
+
 ## Настройки хостинга
 
-- Framework preset: `Vite` или `React`
+- Framework preset: `Node.js`, `Vite` или `React`
 - Install command: `npm install`
 - Build command: `npm run build`
-- Output directory: `dist`
+- Start command: `npm run start`
+- Output directory: `dist`, если хостинг работает в статическом режиме
 - Node.js: `20.19+` или `24`
 
 Подробная инструкция: [DEPLOY.md](./DEPLOY.md).
@@ -54,5 +63,6 @@ npm run build
 - `index.html` - входная HTML-страница
 - `src/main.js` - контент страницы и клиентская логика формы
 - `src/styles.css` - стили сайта
-- `api/booking.js` - serverless endpoint для Telegram-заявок
+- `server.mjs` - production-сервер для облачного Node-деплоя
+- `api/booking.js` - endpoint для Telegram-заявок
 - `public/assets` - изображения, логотипы, шрифты
