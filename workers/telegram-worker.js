@@ -1,10 +1,10 @@
-const allowedLessonTypes = new Set([
-  'Взрослый мастер-класс',
-  'Детская студия',
-  'Семейное занятие',
-  'Индивидуальное занятие',
-  'Тематическое событие (день рождения, свидание, девичник и т.п)',
-]);
+const lessonPeopleLimits = {
+  'Взрослый мастер-класс': 6,
+  'Детская студия': 6,
+  'Семейное занятие': 6,
+  'Индивидуальное занятие': 4,
+  'Тематическое событие (день рождения, свидание, девичник и т.п)': 10,
+};
 
 function asText(value) {
   return String(value || '').trim();
@@ -64,7 +64,7 @@ function validateBooking(body) {
   const phone = asText(body.phone);
   const comment = asText(body.comment);
 
-  if (!allowedLessonTypes.has(lessonType)) {
+  if (!Object.hasOwn(lessonPeopleLimits, lessonType)) {
     return { error: 'Выберите тип занятия из списка.' };
   }
 
@@ -72,16 +72,16 @@ function validateBooking(body) {
     return { error: 'Укажите дату занятия.' };
   }
 
-  if (!Number.isInteger(people) || people < 1 || people > 12) {
-    return { error: 'Количество гостей должно быть от 1 до 12.' };
+  if (!Number.isInteger(people) || people < 1 || people > lessonPeopleLimits[lessonType]) {
+    return { error: `Количество гостей для этого формата должно быть от 1 до ${lessonPeopleLimits[lessonType]}.` };
+  }
+
+  if (!/^\+?\d{11}$/.test(phone)) {
+    return { error: 'Введите телефон в формате +78001234567 или 88001234567.' };
   }
 
   if (name.length < 2) {
     return { error: 'Укажите имя.' };
-  }
-
-  if (phone.length < 6) {
-    return { error: 'Укажите телефон для связи.' };
   }
 
   return {

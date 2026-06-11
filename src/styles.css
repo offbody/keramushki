@@ -38,6 +38,11 @@
   box-sizing: border-box;
 }
 
+html {
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   min-width: 320px;
   margin: 0;
@@ -62,6 +67,8 @@ input,
 select,
 textarea {
   font: inherit;
+  min-width: 0;
+  touch-action: manipulation;
 }
 
 button {
@@ -79,6 +86,18 @@ svg {
   flex: 0 0 auto;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .site-shell {
   overflow: hidden;
 }
@@ -90,8 +109,8 @@ svg {
   left: clamp(24px, 3.7vw, 70px);
   z-index: 40;
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 24px;
+  grid-template-columns: auto 1fr auto auto;
+  gap: clamp(12px, 1.4vw, 24px);
   align-items: center;
   min-height: clamp(56px, 4.2vw, 72px);
   padding: 0;
@@ -175,6 +194,37 @@ svg {
   backdrop-filter: blur(16px);
 }
 
+.contact-choice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  min-width: clamp(152px, 9vw, 174px);
+}
+
+.contact-choice select {
+  width: 100%;
+  min-height: clamp(50px, 3vw, 58px);
+  padding: 0 38px 0 18px;
+  border: 1px solid rgba(255, 250, 242, 0.16);
+  border-radius: 10px;
+  color: var(--milk);
+  font-size: clamp(15px, 0.92vw, 18px);
+  font-weight: 650;
+  line-height: 1;
+  appearance: none;
+  background:
+    url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m6 9 6 6 6-6' stroke='%23fffaf2' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 15px center / 16px 16px no-repeat,
+    rgba(255, 250, 242, 0.1);
+  cursor: pointer;
+  outline: none;
+  backdrop-filter: blur(16px);
+}
+
+.contact-choice select:focus {
+  border-color: rgba(255, 250, 242, 0.42);
+}
+
 .site-header.is-scrolled .main-nav,
 .site-header.is-scrolled .main-nav a {
   color: var(--milk);
@@ -184,6 +234,13 @@ svg {
   color: var(--milk);
   border-color: rgba(255, 250, 242, 0.28);
   background: rgba(255, 250, 242, 0.18);
+}
+
+.site-header.is-scrolled .contact-choice select {
+  border-color: rgba(255, 250, 242, 0.28);
+  background:
+    url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m6 9 6 6 6-6' stroke='%23fffaf2' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 15px center / 16px 16px no-repeat,
+    rgba(255, 250, 242, 0.18);
 }
 
 .hero {
@@ -552,6 +609,7 @@ h3 {
   gap: clamp(34px, 8vw, 104px);
   align-items: start;
   color: var(--milk);
+  min-width: 0;
   background:
     linear-gradient(120deg, rgba(32, 27, 22, 0.88), rgba(32, 27, 22, 0.58)),
     url("/assets/gallery/workshop-evening.jpg") center / cover;
@@ -574,6 +632,7 @@ h3 {
 .booking-form {
   display: grid;
   gap: 16px;
+  min-width: 0;
   padding: clamp(20px, 3vw, 34px);
   border: 1px solid rgba(255, 250, 242, 0.24);
   border-radius: var(--radius);
@@ -586,10 +645,12 @@ h3 {
 .people-field {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
-.booking-form label span,
-.people-field > span {
+.booking-form label > span:not(.date-control),
+.people-field > span,
+.people-field small {
   color: rgba(255, 250, 242, 0.72);
   font-size: 12px;
   font-weight: 820;
@@ -597,13 +658,20 @@ h3 {
   text-transform: uppercase;
 }
 
+.people-field small {
+  color: rgba(255, 250, 242, 0.54);
+  letter-spacing: 0.04em;
+}
+
 .booking-form input,
 .booking-form select,
 .booking-form textarea {
   width: 100%;
+  min-width: 0;
   border: 1px solid rgba(255, 250, 242, 0.26);
   border-radius: var(--radius);
   color: var(--milk);
+  font-size: 16px;
   background: rgba(32, 27, 22, 0.42);
   outline: none;
 }
@@ -624,12 +692,50 @@ h3 {
 }
 
 .booking-form input[type="date"] {
+  min-width: 0;
+  padding-right: 50px;
+  appearance: none;
+  -webkit-appearance: none;
   color-scheme: dark;
 }
 
 .booking-form input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: brightness(0) invert(1);
-  opacity: 0.92;
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.booking-form input[type="date"]::-webkit-date-and-time-value {
+  min-width: 0;
+  text-align: left;
+}
+
+.date-control {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.date-control .date-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  color: var(--milk);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.date-control svg {
+  width: 20px;
+  height: 20px;
 }
 
 .booking-form textarea {
@@ -657,6 +763,7 @@ h3 {
 .stepper {
   display: grid;
   grid-template-columns: 54px 1fr 54px;
+  min-width: 0;
   min-height: 54px;
   border: 1px solid rgba(255, 250, 242, 0.26);
   border-radius: var(--radius);
@@ -674,6 +781,12 @@ h3 {
 .stepper button {
   cursor: pointer;
   background: rgba(255, 250, 242, 0.08);
+  touch-action: manipulation;
+}
+
+.stepper button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
 }
 
 .stepper output {
@@ -875,7 +988,8 @@ h3 {
     top: 10px;
     right: 10px;
     left: 10px;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
     min-height: 58px;
     padding: 6px 6px 6px 10px;
   }
@@ -894,11 +1008,26 @@ h3 {
     display: none;
   }
 
+  .contact-choice {
+    justify-self: end;
+    min-width: 0;
+    width: min(38vw, 142px);
+  }
+
+  .contact-choice select {
+    min-height: 40px;
+    padding: 0 25px 0 10px;
+    font-size: 13px;
+    background-position: right 9px center;
+    background-size: 14px 14px;
+  }
+
   .header-action {
     justify-self: end;
+    min-width: 0;
     min-height: 40px;
     padding: 0 12px;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .hero {
@@ -975,6 +1104,7 @@ h3 {
 
   .booking-form {
     padding: 16px;
+    width: 100%;
   }
 
   .gallery-grid {
@@ -1019,5 +1149,30 @@ h3 {
 
   h3 {
     font-size: 30px;
+  }
+
+  .site-header {
+    right: 8px;
+    left: 8px;
+    padding-left: 8px;
+  }
+
+  .brand {
+    width: 42px;
+    height: 42px;
+  }
+
+  .brand img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .contact-choice {
+    width: min(37vw, 132px);
+  }
+
+  .contact-choice select,
+  .header-action {
+    font-size: 12px;
   }
 }

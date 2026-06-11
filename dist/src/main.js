@@ -70,6 +70,17 @@ const reviews = [
   },
 ];
 
+const studioPhone = '+79289758535';
+const studioTelegramPhone = studioPhone.replace(/\D/g, '');
+
+const lessonPeopleLimits = {
+  'Взрослый мастер-класс': 6,
+  'Детская студия': 6,
+  'Семейное занятие': 6,
+  'Индивидуальное занятие': 4,
+  'Тематическое событие (день рождения, свидание, девичник и т.п)': 10,
+};
+
 const navItems = [
   ['Галерея', '#gallery'],
   ['Услуги', '#services'],
@@ -106,6 +117,14 @@ function render() {
         <nav class="main-nav" aria-label="Навигация">
           ${navItems.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}
         </nav>
+        <label class="contact-choice">
+          <span class="sr-only">Связаться с мастерской</span>
+          <select data-contact-select aria-label="Связаться с мастерской">
+            <option value="">${studioPhone}</option>
+            <option value="call">Позвонить</option>
+            <option value="telegram">Написать в Telegram</option>
+          </select>
+        </label>
         <a class="header-action" href="#booking">Записаться</a>
       </header>
 
@@ -221,9 +240,12 @@ function render() {
                 <option value="Тематическое событие (день рождения, свидание, девичник и т.п)">Тематическое событие (день рождения, свидание, девичник и т.п)</option>
               </select>
             </label>
-            <label>
+            <label class="date-label">
               <span>Дата</span>
-              <input name="date" type="date" required />
+              <span class="date-control">
+                <input name="date" type="date" required />
+                <span class="date-icon">${icon('calendar')}</span>
+              </span>
             </label>
             <div class="people-field">
               <span>Количество человек</span>
@@ -232,6 +254,7 @@ function render() {
                 <output data-people-output>2</output>
                 <button type="button" data-step="1" aria-label="Увеличить количество">${icon('plus')}</button>
               </div>
+              <small data-people-limit></small>
               <input name="people" type="hidden" value="2" />
             </div>
             <label>
@@ -240,7 +263,7 @@ function render() {
             </label>
             <label>
               <span>Телефон</span>
-              <input name="phone" type="tel" autocomplete="tel" placeholder="+7" required />
+              <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" maxlength="12" pattern="\\+?\\d{11}" required />
             </label>
             <label class="form-wide">
               <span>Комментарий</span>
@@ -297,15 +320,44 @@ function initHeader() {
   window.addEventListener('scroll', syncHeader, { passive: true });
 }
 
+function initContactChoice() {
+  const contactSelects = document.querySelectorAll('[data-contact-select]');
+
+  contactSelects.forEach((select) => {
+    select.addEventListener('change', () => {
+      const action = select.value;
+      select.value = '';
+
+      if (action === 'call') {
+        window.location.href = `tel:${studioPhone}`;
+        return;
+      }
+
+      if (action === 'telegram') {
+        window.location.href = `tg://resolve?phone=${studioTelegramPhone}`;
+        window.setTimeout(() => {
+          if (document.visibilityState === 'visible') {
+            window.location.href = `https://t.me/+${studioTelegramPhone}`;
+          }
+        }, 700);
+      }
+    });
+  });
+}
+
 function initBooking() {
   const form = document.querySelector('[data-booking-form]');
+  const lessonSelect = form?.elements.lessonType;
   const peopleInput = form?.elements.people;
   const dateInput = form?.elements.date;
+  const phoneInput = form?.elements.phone;
   const output = document.querySelector('[data-people-output]');
   const result = document.querySelector('[data-booking-result]');
+  const limitHint = document.querySelector('[data-people-limit]');
+  const stepButtons = form?.querySelectorAll('[data-step]');
   let people = 2;
 
-  if (!form || !peopleInput || !dateInput || !output || !result) {
+  if (!form || !lessonSelect || !peopleInput || !dateInput || !phoneInput || !output || !result || !limitHint || !stepButtons) {
     return;
   }
 
@@ -319,17 +371,66 @@ function initBooking() {
   dateInput.min = toInputDate(today);
   dateInput.value = toInputDate(tomorrow);
 
-  function setPeople(value) {
-    people = Math.min(12, Math.max(1, value));
-    peopleInput.value = String(people);
-    output.textContent = String(people);
+  function getPeopleMax() {
+    return lessonPeopleLimits[lessonSelect.value] || 6;
   }
 
-  form.querySelectorAll('[data-step]').forEach((button) => {
+  function syncPeopleControls() {
+    const max = getPeopleMax();
+    limitHint.textContent = `До ${max} ${max === 1 ? 'человека' : 'человек'}`;
+
+    stepButtons.forEach((button) => {
+      const step = Number(button.dataset.step);
+      button.disabled = step < 0 ? people <= 1 : people >= max;
+    });
+  }
+
+  function setPeople(value) {
+    people = Math.min(getPeopleMax(), Math.max(1, value));
+    peopleInput.value = String(people);
+    output.textContent = String(people);
+    syncPeopleControls();
+  }
+
+  function normalizePhone(value) {
+    const raw = String(value || '').trim();
+    const startsWithPlus = raw.startsWith('+');
+    const digits = raw.replace(/\D/g, '').slice(0, 11);
+
+    return startsWithPlus ? `+${digits}` : digits;
+  }
+
+  function validatePhone() {
+    const digits = phoneInput.value.replace(/\D/g, '');
+    const isValid = digits.length === 11 && /^\+?\d{11}$/.test(phoneInput.value);
+
+    phoneInput.setCustomValidity(
+      isValid ? '' : 'Введите 11 цифр телефона: +78001234567 или 88001234567.',
+    );
+  }
+
+  lessonSelect.addEventListener('change', () => {
+    setPeople(people);
+  });
+
+  phoneInput.addEventListener('input', () => {
+    phoneInput.value = normalizePhone(phoneInput.value);
+    validatePhone();
+  });
+
+  phoneInput.addEventListener('blur', () => {
+    if (phoneInput.value === '+') {
+      phoneInput.value = '';
+    }
+  });
+
+  stepButtons.forEach((button) => {
     button.addEventListener('click', () => {
       setPeople(people + Number(button.dataset.step));
     });
   });
+
+  setPeople(people);
 
   function showResult(message, state = 'info') {
     result.hidden = false;
@@ -339,6 +440,8 @@ function initBooking() {
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    validatePhone();
 
     if (!form.reportValidity()) {
       return;
@@ -397,5 +500,6 @@ function initHashScroll() {
 
 render();
 initHeader();
+initContactChoice();
 initBooking();
 initHashScroll();
