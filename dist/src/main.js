@@ -112,21 +112,36 @@ function render() {
     <div class="site-shell">
       <header class="site-header" data-header>
         <a class="brand" href="#top" aria-label="Керамушки">
-          <img src="/assets/logo-night.svg" alt="Керамушки" />
+          <img class="brand-full" src="/assets/logo-night.svg" alt="Керамушки" />
+          <img class="brand-compact" src="/assets/logo-cer.svg" alt="Керамушки" />
         </a>
         <nav class="main-nav" aria-label="Навигация">
           ${navItems.map(([label, href]) => `<a href="${href}">${label}</a>`).join('')}
         </nav>
-        <label class="contact-choice">
-          <span class="sr-only">Связаться с мастерской</span>
-          <select data-contact-select aria-label="Связаться с мастерской">
-            <option value="">${studioPhone}</option>
-            <option value="call">Позвонить</option>
-            <option value="telegram">Написать в Telegram</option>
-          </select>
-        </label>
+        <div class="contact-dropdown" data-contact-dropdown>
+          <button class="contact-dropdown-toggle" type="button" data-contact-dropdown-toggle aria-expanded="false" aria-haspopup="menu">
+            ${studioPhone}
+          </button>
+          <div class="contact-dropdown-menu" data-contact-dropdown-menu role="menu" hidden>
+            <button type="button" data-contact-action="call" role="menuitem">Позвонить</button>
+            <button type="button" data-contact-action="telegram" role="menuitem">Написать в Telegram</button>
+          </div>
+        </div>
+        <button class="contact-mobile-trigger" type="button" data-contact-sheet-open aria-haspopup="dialog">
+          ${studioPhone}
+        </button>
         <a class="header-action" href="#booking">Записаться</a>
       </header>
+
+      <div class="contact-sheet" data-contact-sheet role="dialog" aria-modal="true" aria-labelledby="contact-sheet-title" hidden>
+        <button class="contact-sheet-backdrop" type="button" data-contact-sheet-close aria-label="Закрыть"></button>
+        <div class="contact-sheet-panel">
+          <p id="contact-sheet-title">${studioPhone}</p>
+          <button type="button" data-contact-action="call">Позвонить</button>
+          <button type="button" data-contact-action="telegram">Написать в Telegram</button>
+          <button class="contact-sheet-cancel" type="button" data-contact-sheet-close>Отмена</button>
+        </div>
+      </div>
 
       <main id="top">
         <section class="hero" aria-label="Керамическая мастерская Керамушки">
@@ -321,27 +336,114 @@ function initHeader() {
 }
 
 function initContactChoice() {
-  const contactSelects = document.querySelectorAll('[data-contact-select]');
+  const dropdown = document.querySelector('[data-contact-dropdown]');
+  const dropdownToggle = document.querySelector('[data-contact-dropdown-toggle]');
+  const dropdownMenu = document.querySelector('[data-contact-dropdown-menu]');
+  const sheet = document.querySelector('[data-contact-sheet]');
+  const sheetOpenButton = document.querySelector('[data-contact-sheet-open]');
+  const sheetCloseButtons = document.querySelectorAll('[data-contact-sheet-close]');
+  const sheetActionButtons = document.querySelectorAll('[data-contact-action]');
 
-  contactSelects.forEach((select) => {
-    select.addEventListener('change', () => {
-      const action = select.value;
-      select.value = '';
+  function runContactAction(action) {
+    if (action === 'call') {
+      window.location.href = `tel:${studioPhone}`;
+      return;
+    }
 
-      if (action === 'call') {
-        window.location.href = `tel:${studioPhone}`;
-        return;
-      }
+    if (action === 'telegram') {
+      window.location.href = `tg://resolve?phone=${studioTelegramPhone}`;
+      window.setTimeout(() => {
+        if (document.visibilityState === 'visible') {
+          window.location.href = `https://t.me/+${studioTelegramPhone}`;
+        }
+      }, 700);
+    }
+  }
 
-      if (action === 'telegram') {
-        window.location.href = `tg://resolve?phone=${studioTelegramPhone}`;
-        window.setTimeout(() => {
-          if (document.visibilityState === 'visible') {
-            window.location.href = `https://t.me/+${studioTelegramPhone}`;
-          }
-        }, 700);
-      }
+  function closeDropdown() {
+    if (!dropdown || !dropdownToggle || !dropdownMenu) {
+      return;
+    }
+
+    dropdown.classList.remove('is-open');
+    dropdownToggle.setAttribute('aria-expanded', 'false');
+    dropdownMenu.hidden = true;
+  }
+
+  function openDropdown() {
+    if (!dropdown || !dropdownToggle || !dropdownMenu) {
+      return;
+    }
+
+    dropdown.classList.add('is-open');
+    dropdownToggle.setAttribute('aria-expanded', 'true');
+    dropdownMenu.hidden = false;
+  }
+
+  function toggleDropdown() {
+    if (dropdownMenu?.hidden) {
+      openDropdown();
+    } else {
+      closeDropdown();
+    }
+  }
+
+  function openSheet() {
+    if (!sheet) {
+      return;
+    }
+
+    sheet.hidden = false;
+    document.body.classList.add('has-contact-sheet');
+  }
+
+  function closeSheet() {
+    if (!sheet) {
+      return;
+    }
+
+    sheet.hidden = true;
+    document.body.classList.remove('has-contact-sheet');
+  }
+
+  dropdownToggle?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    toggleDropdown();
+  });
+
+  dropdownMenu?.addEventListener('click', (event) => {
+    event.stopPropagation();
+  });
+
+  sheetOpenButton?.addEventListener('click', openSheet);
+
+  sheetCloseButtons.forEach((button) => {
+    button.addEventListener('click', closeSheet);
+  });
+
+  sheetActionButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const action = button.dataset.contactAction;
+      closeDropdown();
+      closeSheet();
+      runContactAction(action);
     });
+  });
+
+  window.addEventListener('click', (event) => {
+    if (dropdown && !dropdown.contains(event.target)) {
+      closeDropdown();
+    }
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeDropdown();
+
+      if (sheet && !sheet.hidden) {
+        closeSheet();
+      }
+    }
   });
 }
 

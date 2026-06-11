@@ -1,9 +1,10 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { extname, join, normalize } from 'node:path';
+import { dirname, extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = normalize(join(fileURLToPath(import.meta.url), '..', '..'));
+const projectRoot = normalize(join(dirname(fileURLToPath(import.meta.url)), '..'));
+const root = join(projectRoot, 'dist');
 const host = process.env.HOST || '127.0.0.1';
 const port = Number(process.env.PORT || 5173);
 const types = {
@@ -43,7 +44,7 @@ const server = createServer((request, response) => {
   }
 
   if (!existsSync(filePath) || !statSync(filePath).isFile()) {
-    const publicPath = join(root, 'public', cleanPath);
+    const publicPath = join(projectRoot, 'public', cleanPath);
     filePath =
       existsSync(publicPath) && statSync(publicPath).isFile()
         ? publicPath
