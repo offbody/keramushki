@@ -368,16 +368,26 @@ svg {
 }
 
 .contact-sheet-backdrop {
-  position: absolute;
-  inset: 0;
+  position: fixed;
+  inset: -2px;
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   background:
     radial-gradient(circle at 50% 100%, rgba(240, 188, 68, 0.12), transparent 42%),
     rgba(18, 14, 11, 0.68);
+  appearance: none;
+  -webkit-appearance: none;
   backdrop-filter: blur(12px);
 }
 
 .contact-sheet-panel {
   position: relative;
+  z-index: 1;
   display: grid;
   gap: 9px;
   width: min(100%, 430px);
@@ -462,15 +472,25 @@ svg {
 
 .booking-modal-backdrop {
   position: fixed;
-  inset: 0;
+  inset: -2px;
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   background:
     radial-gradient(circle at 72% 18%, rgba(240, 188, 68, 0.14), transparent 34%),
     rgba(18, 14, 11, 0.72);
+  appearance: none;
+  -webkit-appearance: none;
   backdrop-filter: blur(16px);
 }
 
 .booking-modal-panel {
   position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(260px, 0.66fr) minmax(360px, 1fr);
   gap: clamp(22px, 4vw, 54px);
@@ -1354,16 +1374,38 @@ h3 {
 
 @media (max-width: 760px) {
   .booking-modal {
-    align-items: end;
-    padding: 10px 10px max(10px, env(safe-area-inset-bottom));
+    place-items: stretch;
+    align-items: stretch;
+    padding: 0;
+    overflow: hidden;
   }
 
   .booking-modal-panel {
+    align-content: start;
     gap: 18px;
     width: 100%;
-    max-height: calc(100svh - 20px);
-    padding: 16px;
-    border-radius: 22px;
+    height: 100svh;
+    height: 100dvh;
+    max-height: none;
+    padding: 0 16px max(18px, env(safe-area-inset-bottom));
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    overscroll-behavior: contain;
+  }
+
+  .booking-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    grid-template-columns: minmax(0, 1fr) 40px;
+    margin: 0 -16px;
+    padding: max(16px, env(safe-area-inset-top)) 16px 14px;
+    border-bottom: 1px solid rgba(255, 250, 242, 0.14);
+    background:
+      linear-gradient(135deg, rgba(255, 250, 242, 0.15), rgba(255, 250, 242, 0.06)),
+      rgba(32, 27, 22, 0.86);
+    backdrop-filter: blur(24px) saturate(1.12);
   }
 
   .booking-modal-copy {
