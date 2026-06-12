@@ -33,8 +33,8 @@ const gallery = [
   },
   {
     src: '/assets/gallery/workshop-class.jpg',
-    title: 'Зеленая комната',
-    note: 'Растения, мягкий свет и спокойный темп ручной работы.',
+    title: 'Уютная атмосфера',
+    note: 'Живые растения, климат-контроль и спокойный темп ручной работы.',
   },
   {
     src: '/assets/gallery/workshop-shelves.jpg',
@@ -76,6 +76,7 @@ const reviews = [
 
 const studioPhone = '+79289758535';
 const studioTelegramPhone = studioPhone.replace(/\D/g, '');
+const privacyPolicyUrl = '/assets/docs/privacy-policy.pdf';
 
 const lessonPeopleLimits = {
   'Взрослый мастер-класс': 6,
@@ -97,18 +98,80 @@ const icons = {
     '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>',
   calendar:
     '<path d="M8 2v4"></path><path d="M16 2v4"></path><path d="M3 10h18"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect>',
+  close:
+    '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
   minus: '<path d="M5 12h14"></path>',
   plus: '<path d="M12 5v14"></path><path d="M5 12h14"></path>',
   spark:
     '<path d="M12 3 9.9 8.7 4 11l5.9 2.3L12 19l2.1-5.7L20 11l-5.9-2.3L12 3Z"></path>',
   flower:
     '<path d="M12 13c2.8 0 5-2.2 5-5-2.8 0-5 2.2-5 5Z"></path><path d="M12 13c-2.8 0-5-2.2-5-5 2.8 0 5 2.2 5 5Z"></path><path d="M12 13c0 2.8-2.2 5-5 5 0-2.8 2.2-5 5-5Z"></path><path d="M12 13c0 2.8 2.2 5 5 5 0-2.8-2.2-5-5-5Z"></path><path d="M12 3v18"></path>',
+  phone:
+    '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.35 1.89.66 2.78a2 2 0 0 1-.45 2.11L8.09 9.84a16 16 0 0 0 6.07 6.07l1.23-1.23a2 2 0 0 1 2.11-.45c.89.31 1.82.53 2.78.66A2 2 0 0 1 22 16.92Z"></path>',
   users:
     '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.9"></path><path d="M16 3.1a4 4 0 0 1 0 7.8"></path>',
+  telegram:
+    '<path d="m22 2-7 20-4-9-9-4 20-7Z"></path><path d="M22 2 11 13"></path>',
 };
 
 function icon(name) {
   return `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${icons[name]}</svg>`;
+}
+
+function bookingFormMarkup(modifier = '') {
+  const className = ['booking-form', modifier].filter(Boolean).join(' ');
+
+  return `
+    <form class="${className}" data-booking-form>
+      <label>
+        <span>Тип занятия</span>
+        <select name="lessonType" required>
+          <option value="Взрослый мастер-класс">Взрослый мастер-класс</option>
+          <option value="Детская студия">Детская студия</option>
+          <option value="Семейное занятие">Семейное занятие</option>
+          <option value="Индивидуальное занятие">Индивидуальное занятие</option>
+          <option value="Тематическое событие (день рождения, свидание, девичник и т.п)">Тематическое событие (день рождения, свидание, девичник и т.п)</option>
+        </select>
+      </label>
+      <label class="date-label">
+        <span>Дата</span>
+        <span class="date-control">
+          <input name="date" type="date" required />
+          <span class="date-icon">${icon('calendar')}</span>
+        </span>
+      </label>
+      <div class="people-field">
+        <div class="people-field-heading">
+          <span>Количество человек</span>
+          <small data-people-limit></small>
+        </div>
+        <div class="stepper">
+          <button type="button" data-step="-1" aria-label="Уменьшить количество">${icon('minus')}</button>
+          <output data-people-output>2</output>
+          <button type="button" data-step="1" aria-label="Увеличить количество">${icon('plus')}</button>
+        </div>
+        <input name="people" type="hidden" value="2" />
+      </div>
+      <label>
+        <span>Имя</span>
+        <input name="name" type="text" autocomplete="name" placeholder="Как к вам обращаться" required />
+      </label>
+      <label>
+        <span>Телефон</span>
+        <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" maxlength="12" pattern="\\+?\\d{11}" required />
+      </label>
+      <label class="form-wide">
+        <span>Комментарий</span>
+        <textarea name="comment" rows="4" placeholder="Время, повод или пожелания по занятию"></textarea>
+      </label>
+      <button class="button button-submit" type="submit">${icon('spark')} Отправить заявку</button>
+      <p class="privacy-consent">
+        Нажимая кнопку «Отправить заявку», я соглашаюсь с
+        <a href="${privacyPolicyUrl}" target="_blank" rel="noopener noreferrer">политикой обработки персональных данных</a>.
+      </p>
+      <p class="booking-result" data-booking-result role="status" hidden></p>
+    </form>
+  `;
 }
 
 function render() {
@@ -134,15 +197,33 @@ function render() {
         <button class="contact-mobile-trigger" type="button" data-contact-sheet-open aria-haspopup="dialog">
           ${studioPhone}
         </button>
-        <a class="header-action" href="#booking">Записаться</a>
+        <button class="header-action" type="button" data-booking-modal-open>Записаться</button>
       </header>
+
+      <div class="booking-modal" data-booking-modal role="dialog" aria-modal="true" aria-labelledby="booking-modal-title" hidden>
+        <button class="booking-modal-backdrop" type="button" data-booking-modal-close aria-label="Закрыть"></button>
+        <div class="booking-modal-panel">
+          <div class="booking-modal-header">
+            <h2 class="booking-modal-title" id="booking-modal-title">Забронируйте занятие</h2>
+            <button class="booking-modal-close" type="button" data-booking-modal-close aria-label="Закрыть форму записи">
+              ${icon('close')}
+            </button>
+          </div>
+          <div class="booking-modal-copy">
+            <p>
+              Выберите формат, дату и размер компании. Мы получим заявку, и свяжемся с вами, чтобы подтвердить дату и время.
+            </p>
+          </div>
+          ${bookingFormMarkup('booking-form-modal')}
+        </div>
+      </div>
 
       <div class="contact-sheet" data-contact-sheet role="dialog" aria-modal="true" aria-labelledby="contact-sheet-title" hidden>
         <button class="contact-sheet-backdrop" type="button" data-contact-sheet-close aria-label="Закрыть"></button>
         <div class="contact-sheet-panel">
           <p id="contact-sheet-title">${studioPhone}</p>
-          <button type="button" data-contact-action="call">Позвонить</button>
-          <button type="button" data-contact-action="telegram">Написать в Telegram</button>
+          <button type="button" data-contact-action="call">${icon('phone')} Позвонить</button>
+          <button type="button" data-contact-action="telegram">${icon('telegram')} Написать в Telegram</button>
           <button class="contact-sheet-cancel" type="button" data-contact-sheet-close>Отмена</button>
         </div>
       </div>
@@ -162,7 +243,7 @@ function render() {
             </p>
             <div class="hero-actions">
               <a class="button button-ghost" href="#gallery">Смотреть мастерскую ${icon('arrow')}</a>
-              <a class="button button-primary" href="#booking">${icon('calendar')} Забронировать занятие</a>
+              <button class="button button-primary" type="button" data-booking-modal-open>${icon('calendar')} Забронировать занятие</button>
             </div>
           </div>
         </section>
@@ -249,49 +330,7 @@ function render() {
               После заявки мы уточним время, подскажем формат работы и подготовим стол под вашу компанию.
             </p>
           </div>
-          <form class="booking-form" data-booking-form>
-            <label>
-              <span>Тип занятия</span>
-              <select name="lessonType" required>
-                <option value="Взрослый мастер-класс">Взрослый мастер-класс</option>
-                <option value="Детская студия">Детская студия</option>
-                <option value="Семейное занятие">Семейное занятие</option>
-                <option value="Индивидуальное занятие">Индивидуальное занятие</option>
-                <option value="Тематическое событие (день рождения, свидание, девичник и т.п)">Тематическое событие (день рождения, свидание, девичник и т.п)</option>
-              </select>
-            </label>
-            <label class="date-label">
-              <span>Дата</span>
-              <span class="date-control">
-                <input name="date" type="date" required />
-                <span class="date-icon">${icon('calendar')}</span>
-              </span>
-            </label>
-            <div class="people-field">
-              <span>Количество человек</span>
-              <div class="stepper">
-                <button type="button" data-step="-1" aria-label="Уменьшить количество">${icon('minus')}</button>
-                <output data-people-output>2</output>
-                <button type="button" data-step="1" aria-label="Увеличить количество">${icon('plus')}</button>
-              </div>
-              <small data-people-limit></small>
-              <input name="people" type="hidden" value="2" />
-            </div>
-            <label>
-              <span>Имя</span>
-              <input name="name" type="text" autocomplete="name" placeholder="Как к вам обращаться" required />
-            </label>
-            <label>
-              <span>Телефон</span>
-              <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" maxlength="12" pattern="\\+?\\d{11}" required />
-            </label>
-            <label class="form-wide">
-              <span>Комментарий</span>
-              <textarea name="comment" rows="4" placeholder="Время, повод или пожелания по занятию"></textarea>
-            </label>
-            <button class="button button-submit" type="submit">${icon('spark')} Отправить заявку</button>
-            <p class="booking-result" data-booking-result role="status" hidden></p>
-          </form>
+          ${bookingFormMarkup()}
         </section>
 
         <section class="reviews section-block" id="reviews">
@@ -321,8 +360,11 @@ function render() {
         <div>
           <img src="/assets/logo-night.svg" alt="Керамушки" />
           <p>Керамическая мастерская для ручной лепки, праздников и тихих встреч с глиной.</p>
+          <a class="footer-policy-link" href="${privacyPolicyUrl}" target="_blank" rel="noopener noreferrer">
+            Политика обработки персональных данных
+          </a>
         </div>
-        <a class="button button-primary" href="#booking">${icon('calendar')} Записаться</a>
+        <button class="button button-primary" type="button" data-booking-modal-open>${icon('calendar')} Записаться</button>
       </footer>
     </div>
   `;
@@ -452,17 +494,57 @@ function initContactChoice() {
   });
 }
 
-function initBooking() {
-  const form = document.querySelector('[data-booking-form]');
+function initBookingModal() {
+  const modal = document.querySelector('[data-booking-modal]');
+  const openButtons = document.querySelectorAll('[data-booking-modal-open]');
+  const closeButtons = document.querySelectorAll('[data-booking-modal-close]');
+  let lastFocusedElement = null;
+
+  if (!modal || !openButtons.length || !closeButtons.length) {
+    return;
+  }
+
+  function openModal() {
+    lastFocusedElement = document.activeElement;
+    modal.hidden = false;
+    document.body.classList.add('has-booking-modal');
+    modal.querySelector('.booking-modal-close')?.focus();
+  }
+
+  function closeModal() {
+    modal.hidden = true;
+    document.body.classList.remove('has-booking-modal');
+
+    if (lastFocusedElement instanceof HTMLElement) {
+      lastFocusedElement.focus();
+    }
+  }
+
+  openButtons.forEach((button) => {
+    button.addEventListener('click', openModal);
+  });
+
+  closeButtons.forEach((button) => {
+    button.addEventListener('click', closeModal);
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !modal.hidden) {
+      closeModal();
+    }
+  });
+}
+
+function initBookingForm(form) {
   const lessonSelect = form?.elements.lessonType;
   const peopleInput = form?.elements.people;
   const dateInput = form?.elements.date;
   const phoneInput = form?.elements.phone;
-  const output = document.querySelector('[data-people-output]');
-  const result = document.querySelector('[data-booking-result]');
-  const limitHint = document.querySelector('[data-people-limit]');
+  const output = form?.querySelector('[data-people-output]');
+  const result = form?.querySelector('[data-booking-result]');
+  const limitHint = form?.querySelector('[data-people-limit]');
   const stepButtons = form?.querySelectorAll('[data-step]');
-  let people = 2;
+  let people = Number(peopleInput?.value) || 2;
 
   if (!form || !lessonSelect || !peopleInput || !dateInput || !phoneInput || !output || !result || !limitHint || !stepButtons) {
     return;
@@ -594,6 +676,12 @@ function initBooking() {
   });
 }
 
+function initBooking() {
+  document.querySelectorAll('[data-booking-form]').forEach((form) => {
+    initBookingForm(form);
+  });
+}
+
 function initHashScroll() {
   if (!window.location.hash) {
     return;
@@ -608,5 +696,6 @@ function initHashScroll() {
 render();
 initHeader();
 initContactChoice();
+initBookingModal();
 initBooking();
 initHashScroll();

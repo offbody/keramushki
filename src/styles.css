@@ -70,7 +70,8 @@ body {
     linear-gradient(180deg, var(--paper), #efe2cf 48%, #e7d8c4);
 }
 
-body.has-contact-sheet {
+body.has-contact-sheet,
+body.has-booking-modal {
   overflow: hidden;
 }
 
@@ -363,53 +364,183 @@ svg {
   z-index: 90;
   display: grid;
   align-items: end;
-  padding: 0 10px max(10px, env(safe-area-inset-bottom));
+  padding: 0 10px max(12px, env(safe-area-inset-bottom));
 }
 
 .contact-sheet-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(18, 14, 11, 0.48);
-  backdrop-filter: blur(8px);
+  background:
+    radial-gradient(circle at 50% 100%, rgba(240, 188, 68, 0.12), transparent 42%),
+    rgba(18, 14, 11, 0.68);
+  backdrop-filter: blur(12px);
 }
 
 .contact-sheet-panel {
   position: relative;
   display: grid;
-  gap: 8px;
+  gap: 9px;
   width: min(100%, 430px);
   margin: 0 auto;
-  padding-bottom: 2px;
+  padding: 10px;
+  border: 1px solid rgba(255, 250, 242, 0.22);
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(255, 250, 242, 0.16), rgba(255, 250, 242, 0.07)),
+    rgba(32, 27, 22, 0.66);
+  box-shadow: 0 26px 80px rgba(18, 14, 11, 0.44);
+  backdrop-filter: blur(26px) saturate(1.12);
 }
 
 .contact-sheet-panel p,
 .contact-sheet-panel button {
   margin: 0;
+  border: 1px solid rgba(255, 250, 242, 0.18);
   border-radius: 14px;
-  background: rgba(255, 250, 242, 0.96);
-  box-shadow: 0 18px 50px rgba(18, 14, 11, 0.16);
+  color: var(--milk);
+  background: rgba(255, 250, 242, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 250, 242, 0.12);
 }
 
 .contact-sheet-panel p {
-  padding: 15px 18px;
-  color: var(--muted);
+  padding: 15px 18px 13px;
+  color: rgba(255, 250, 242, 0.72);
   font-size: 14px;
   font-weight: 650;
   text-align: center;
 }
 
 .contact-sheet-panel button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   min-height: 54px;
-  color: #0b67c2;
   font-size: 18px;
-  font-weight: 520;
+  font-weight: 620;
   cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.contact-sheet-panel button svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+.contact-sheet-panel button:active,
+.contact-sheet-panel button:focus {
+  border-color: rgba(240, 188, 68, 0.42);
+  color: var(--yellow);
+  background: rgba(240, 188, 68, 0.13);
+  outline: none;
 }
 
 .contact-sheet-panel .contact-sheet-cancel {
-  margin-top: 2px;
-  color: var(--ink);
-  font-weight: 720;
+  margin-top: 3px;
+  border-color: rgba(255, 250, 242, 0.28);
+  background: rgba(255, 250, 242, 0.13);
+  font-weight: 760;
+}
+
+.booking-modal[hidden] {
+  display: none;
+}
+
+.booking-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 86;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 3vw, 40px);
+  overflow-y: auto;
+}
+
+.booking-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 72% 18%, rgba(240, 188, 68, 0.14), transparent 34%),
+    rgba(18, 14, 11, 0.72);
+  backdrop-filter: blur(16px);
+}
+
+.booking-modal-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.66fr) minmax(360px, 1fr);
+  gap: clamp(22px, 4vw, 54px);
+  width: min(1080px, 100%);
+  max-height: min(900px, calc(100svh - 32px));
+  padding: clamp(20px, 3vw, 36px);
+  border: 1px solid rgba(255, 250, 242, 0.24);
+  border-radius: 18px;
+  color: var(--milk);
+  background:
+    linear-gradient(135deg, rgba(255, 250, 242, 0.16), rgba(255, 250, 242, 0.07)),
+    rgba(32, 27, 22, 0.72);
+  box-shadow: 0 34px 100px rgba(18, 14, 11, 0.48);
+  overflow-y: auto;
+  backdrop-filter: blur(28px) saturate(1.12);
+}
+
+.booking-modal-header {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 16px;
+  align-items: center;
+}
+
+.booking-modal-title {
+  max-width: 760px;
+  color: var(--yellow);
+  font-size: calc(clamp(42px, 5vw, 76px) - 8px);
+  line-height: 0.9;
+}
+
+.booking-modal-close {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(255, 250, 242, 0.22);
+  border-radius: 12px;
+  color: var(--milk);
+  background: rgba(255, 250, 242, 0.08);
+  cursor: pointer;
+  justify-self: end;
+  backdrop-filter: blur(14px);
+}
+
+.booking-modal-close:hover,
+.booking-modal-close:focus {
+  border-color: rgba(240, 188, 68, 0.42);
+  color: var(--yellow);
+  outline: none;
+}
+
+.booking-modal-copy {
+  align-self: center;
+  padding-right: clamp(0px, 1vw, 12px);
+}
+
+.booking-modal-copy p:not(.eyebrow) {
+  max-width: 520px;
+  margin-top: 0;
+  color: rgba(255, 250, 242, 0.72);
+  font-size: clamp(17px, 1.35vw, 21px);
+  line-height: 1.45;
+}
+
+.booking-form-modal {
+  align-self: start;
+  box-shadow: none;
+  background: rgba(255, 250, 242, 0.1);
 }
 
 .hero {
@@ -829,9 +960,16 @@ h3 {
   min-width: 0;
 }
 
+.people-field-heading {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  min-width: 0;
+}
+
 .booking-form label > span:not(.date-control),
-.people-field > span,
-.people-field small {
+.people-field-heading > span {
   color: rgba(255, 250, 242, 0.72);
   font-size: 12px;
   font-weight: 820;
@@ -840,8 +978,13 @@ h3 {
 }
 
 .people-field small {
-  color: rgba(255, 250, 242, 0.54);
-  letter-spacing: 0.04em;
+  color: rgba(255, 250, 242, 0.34);
+  font-size: 10px;
+  font-weight: 760;
+  letter-spacing: 0.05em;
+  text-align: right;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .booking-form input,
@@ -939,6 +1082,24 @@ h3 {
 .button-submit:disabled {
   cursor: progress;
   opacity: 0.68;
+}
+
+.privacy-consent {
+  margin: -2px 0 0;
+  color: rgba(255, 250, 242, 0.6);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.privacy-consent a {
+  color: rgba(255, 250, 242, 0.9);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.privacy-consent a:hover {
+  color: var(--yellow);
 }
 
 .stepper {
@@ -1141,9 +1302,35 @@ h3 {
   line-height: 1.45;
 }
 
+.footer-policy-link {
+  display: inline-flex;
+  margin-top: 16px;
+  color: rgba(255, 250, 242, 0.68);
+  font-size: 13px;
+  line-height: 1.3;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+  text-transform: lowercase;
+}
+
+.footer-policy-link:hover {
+  color: var(--yellow);
+}
+
 @media (max-width: 1060px) {
   .service-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .booking-modal-panel {
+    grid-template-columns: 1fr;
+    width: min(760px, 100%);
+  }
+
+  .booking-modal-copy {
+    align-self: start;
+    padding-right: 0;
   }
 
   .booking,
@@ -1166,6 +1353,37 @@ h3 {
 }
 
 @media (max-width: 760px) {
+  .booking-modal {
+    align-items: end;
+    padding: 10px 10px max(10px, env(safe-area-inset-bottom));
+  }
+
+  .booking-modal-panel {
+    gap: 18px;
+    width: 100%;
+    max-height: calc(100svh - 20px);
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  .booking-modal-copy {
+    padding-right: 0;
+  }
+
+  .booking-modal-title {
+    font-size: 34px;
+  }
+
+  .booking-modal-copy p:not(.eyebrow) {
+    margin-top: 14px;
+    font-size: 16px;
+  }
+
+  .booking-modal-close {
+    width: 40px;
+    height: 40px;
+  }
+
   .site-header {
     top: 10px;
     right: 10px;
