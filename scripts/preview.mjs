@@ -17,6 +17,7 @@ const types = {
   '.otf': 'font/otf',
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
+  '.ttf': 'font/ttf',
   '.webp': 'image/webp',
   '.woff': 'font/woff',
 };
