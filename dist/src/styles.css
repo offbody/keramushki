@@ -547,7 +547,7 @@ svg {
 }
 
 .booking-modal-copy {
-  align-self: center;
+  align-self: start;
   padding-right: clamp(0px, 1vw, 12px);
 }
 
@@ -1406,10 +1406,8 @@ h3 {
     margin: 0;
     padding: max(16px, env(safe-area-inset-top)) 0 14px;
     border-bottom: 1px solid rgba(255, 250, 242, 0.14);
-    background:
-      linear-gradient(135deg, rgba(255, 250, 242, 0.15), rgba(255, 250, 242, 0.06)),
-      rgba(32, 27, 22, 0.86);
-    backdrop-filter: blur(24px) saturate(1.12);
+    background: transparent;
+    backdrop-filter: none;
   }
 
   .booking-modal-copy {

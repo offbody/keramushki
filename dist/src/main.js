@@ -158,7 +158,7 @@ function bookingFormMarkup(modifier = '') {
       </label>
       <label>
         <span>Телефон</span>
-        <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" maxlength="12" pattern="\\+?\\d{11}" required />
+        <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" maxlength="12" pattern="\\+7\\d{10}" required />
       </label>
       <label class="form-wide">
         <span>Комментарий</span>
@@ -582,19 +582,36 @@ function initBookingForm(form) {
   }
 
   function normalizePhone(value) {
-    const raw = String(value || '').trim();
-    const startsWithPlus = raw.startsWith('+');
-    const digits = raw.replace(/\D/g, '').slice(0, 11);
+    const digits = String(value || '').replace(/\D/g, '');
+    let tail = digits;
 
-    return startsWithPlus ? `+${digits}` : digits;
+    if (tail.startsWith('8') || tail.startsWith('7')) {
+      tail = tail.slice(1);
+    }
+
+    return `+7${tail.slice(0, 10)}`;
+  }
+
+  function movePhoneCaretToEnd() {
+    window.requestAnimationFrame(() => {
+      try {
+        phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+      } catch {
+        // Some mobile browsers do not expose selection APIs for tel inputs.
+      }
+    });
   }
 
   function validatePhone() {
-    const digits = phoneInput.value.replace(/\D/g, '');
-    const isValid = digits.length === 11 && /^\+?\d{11}$/.test(phoneInput.value);
+    if (!phoneInput.value) {
+      phoneInput.setCustomValidity('');
+      return;
+    }
+
+    const isValid = /^\+7\d{10}$/.test(phoneInput.value);
 
     phoneInput.setCustomValidity(
-      isValid ? '' : 'Введите 11 цифр телефона: +78001234567 или 88001234567.',
+      isValid ? '' : 'Введите номер в формате +78001234567.',
     );
   }
 
@@ -602,15 +619,26 @@ function initBookingForm(form) {
     setPeople(people);
   });
 
+  phoneInput.addEventListener('focus', () => {
+    if (!phoneInput.value) {
+      phoneInput.value = '+7';
+    }
+
+    movePhoneCaretToEnd();
+  });
+
   phoneInput.addEventListener('input', () => {
     phoneInput.value = normalizePhone(phoneInput.value);
+    movePhoneCaretToEnd();
     validatePhone();
   });
 
   phoneInput.addEventListener('blur', () => {
-    if (phoneInput.value === '+') {
+    if (phoneInput.value === '+7') {
       phoneInput.value = '';
     }
+
+    validatePhone();
   });
 
   stepButtons.forEach((button) => {
