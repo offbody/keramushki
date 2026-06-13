@@ -1326,6 +1326,13 @@ h3 {
   line-height: 1.45;
 }
 
+.footer-address {
+  margin-top: 10px;
+  color: rgba(255, 250, 242, 0.68);
+  font-style: normal;
+  line-height: 1.45;
+}
+
 .footer-policy-link {
   display: inline-flex;
   margin-top: 16px;

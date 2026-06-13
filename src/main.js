@@ -362,6 +362,7 @@ function render() {
         <div>
           <img src="/assets/logo-night.svg" alt="Керамушки" />
           <p>Керамическая мастерская для ручной лепки, праздников и тихих встреч с глиной.</p>
+          <address class="footer-address">г. Астрахань, ул. Советской Милиции, 8А</address>
           <a class="footer-policy-link" href="${privacyPolicyUrl}" target="_blank" rel="noopener noreferrer">
             Политика обработки персональных данных
           </a>
